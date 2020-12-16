@@ -6,7 +6,16 @@ installation google-cloud-sdk
 $curl https://sdk.cloud.google.com | bash
 ```
 Create Service Account in GCP and downloaded it after that export it
+
+```
+IAM & Admin -> Service Accounts -> Create Service Accounts -> Name it -> Select role -> Done
+
+```
 ![alt text](https://github.com/burcinkaplan/hello-app-with-docker/blob/master/SA.png)
+
+```
+Download the sa.json file and export it.
+```
 ![alt text](https://github.com/burcinkaplan/hello-app-with-docker/blob/master/SA-json-install.png)
 
 ```
