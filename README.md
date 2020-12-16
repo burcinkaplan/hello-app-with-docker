@@ -1,26 +1,116 @@
-# Hello Application example
+Launch and manage a GKE cluster using Terraform.
+## Prerequirements
 
-This example shows how to build and deploy a containerized Go web server
-application using [Kubernetes](https://kubernetes.io).
+installation google-cloud-sdk
+```
+$curl https://sdk.cloud.google.com | bash
+```
+Create Service Account in GCP and downloaded it after that export it
+```
+$export GOOGLE_APPLICATION_CREDENTIALS="$PATH/auth-gcp.json"
+```
+installation terraform for MacOS
+```
+$curl -O https://releases.hashicorp.com/terraform/0.12.29/terraform_0.12.29_darwin_amd64.zip
+$unzip terraform_0.12.29_darwin_amd64.zip
+$cp terraform /usr/local/bin
+$chmod 755 /usr/local/terraform
+```
+installation helm for MacOS
+```
+$brew install kubernetes-helm
+$helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+```
+install docker for MacOS
+```
+$brew cask install docker; open /Applications/Docker.app
+```
 
-Visit https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
-to follow the tutorial and deploy this application on [Google Kubernetes
-Engine](https://cloud.google.com/kubernetes-engine).
+## Configure Project variables
+Should configure variables.tf file accourding to your project.
 
-This directory contains:
+Register Gcloud Project
+```
+$gcloud auth login
+$gcloud init
+$gcloud components update
+$gcloud components install kubectl
+$gcloud set project $PROJECT_ID
+```
+## Launch GKE Cluster
+```
+$ terraform init
+$ terraform plan
+$ terraform apply -auto-approve
+```
+*Note: It will take 10 minutes for the load balancer to provision*
 
-- `main.go` contains the HTTP server implementation. It responds to all HTTP
-  requests with a  `Hello, world!` response.
-- `Dockerfile` is used to build the Docker image for the application.
+## Launch Jenkins
 
-This application is available as two Docker images, which respond to requests
-with different version numbers:
+First, you will need to authenticate to the cluster, then you can run the following:
+```
+$gcloud container clusters get-credentials <ClusterName> --zone us-central1-a --project <PROJECT_ID>
+```
+Jenkins user/pass set by default : admin/admin
+```
+$helm install blue stable/jenkins -f values-latest-jenkins.yaml
+```
+Display Jenkins External-IP Address:
+```
+$kubectl get svc
+```
+Jenkins External IP URL;
+```
+http://<ExternalIP>:8080
+```
 
-- `gcr.io/google-samples/hello-app:1.0`
-- `gcr.io/google-samples/hello-app:2.0`
+## Launch Demo Hello World Application
 
-This example is used in many official/unofficial tutorials, some of them
-include:
-- [Kubernetes Engine Quickstart](https://cloud.google.com/kubernetes-engine/docs/quickstart)
-- [Kubernetes Engine - Deploying a containerized web application](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) tutorial
-- [Kubernetes Engine - Setting up HTTP Load Balancing](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer) tutorial
+You can run the following for Expose the Hello-World Application
+
+```
+$gcloud container clusters get-credentials <ClusterName> --zone us-central1-a --project <PROJECT_ID>
+$cd app-hello
+$export PROJECT_ID=<ProjectID>
+$docker build -t gcr.io/${PROJECT_ID}/bk-hello-app:v1 
+$gcloud auth configure-docker
+$docker push gcr.io/${PROJECT_ID}/bk-hello-app:v1
+```
+Make all current objects in the bucket public (eg, the image you just pushed):
+```
+gsutil acl ch -r -u AllUsers:R gs://artifacts.${PROJECT_ID}.appspot.com
+```
+Make all future objects in the bucket public:
+```
+gsutil defacl ch -u AllUsers:R gs://artifacts.${PROJECT_ID}.appspot.com
+```
+
+
+Create Deployment and configuring scale and autoscale
+```
+$kubectl create deployment hello-app --image=gcr.io/${PROJECT_ID}/bk-hello-app:v1
+$kubectl scale deployment hello-app --replicas=3
+$kubectl autoscale deployment hello-app --cpu-percent=80 --min=1 --max=5
+$kubectl expose deployment hello-app --name=hello-app-service --type=LoadBalancer --port 11130 --target-port 8080
+```
+Display Hello-World App External-IP Address:
+```
+$kubectl get svc
+```
+Application URL:
+```
+http://<ExternalIP>:11130
+```
+
+## Launch New Version of Hello World Application
+```
+$docker build -t gcr.io/${PROJECT_ID}/bk-hello-app:v2 .
+$docker push gcr.io/${PROJECT_ID}/bk-hello-app:v2
+$kubectl set image deployment/hello-app hello-app=gcr.io/${PROJECT_ID}/bk-hello-app:v2
+```
+
+## For Cleaning Environment please Run these commands
+```
+$kubectl delete service hello-app-service
+$gcloud container clusters delete <ClusterName> --quiet
+```
