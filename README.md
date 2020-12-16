@@ -19,7 +19,6 @@ Download the sa.json file and export it.
 ![alt text](https://github.com/burcinkaplan/hello-app-with-docker/blob/master/SA-json-install.png)
 
 ```
-Download the sa.json file and export it.
 $export GOOGLE_APPLICATION_CREDENTIALS="$PATH/auth-gcp.json"
 ```
 installation terraform for MacOS
