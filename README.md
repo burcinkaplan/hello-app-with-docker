@@ -64,7 +64,7 @@ Jenkins External IP URL;
 http://<ExternalIP>:8080
 ```
 
-## Launch Demo Hello World Application
+## Launch Hello World Application
 
 You can run the following for Expose the Hello-World Application
 
