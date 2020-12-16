@@ -7,6 +7,9 @@ $curl https://sdk.cloud.google.com | bash
 ```
 Create Service Account in GCP and downloaded it after that export it
 ```
+![alt text](https://github.com/burcinkaplan/hello-app-with-docker/blob/master/SA.png)
+
+
 $export GOOGLE_APPLICATION_CREDENTIALS="$PATH/auth-gcp.json"
 ```
 installation terraform for MacOS
