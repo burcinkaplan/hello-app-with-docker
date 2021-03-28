@@ -24,7 +24,7 @@ $export GOOGLE_APPLICATION_CREDENTIALS="$PATH/auth-gcp.json"
 installation terraform for MacOS
 ```
 $curl -O https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_darwin_amd64.zip
-$unzip terraform_0.12.29_darwin_amd64.zip
+$unzip terraform_0.14.9_darwin_amd64.zip
 $cp terraform /usr/local/bin
 $chmod 755 /usr/local/bin/terraform
 ```
