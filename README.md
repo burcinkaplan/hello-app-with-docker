@@ -47,7 +47,7 @@ $gcloud auth login
 $gcloud init
 $gcloud components update
 $gcloud components install kubectl
-$gcloud set project $PROJECT_ID
+$gcloud config set project $PROJECT_ID
 ```
 ## Launch GKE Cluster
 ```
