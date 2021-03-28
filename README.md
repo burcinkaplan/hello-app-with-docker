@@ -35,7 +35,7 @@ $helm repo add stable https://charts.helm.sh/stable
 ```
 install docker for MacOS
 ```
-$brew cask install docker; open /Applications/Docker.app
+$brew install --cask docker; open /Applications/Docker.app
 ```
 
 ## Configure Project variables
